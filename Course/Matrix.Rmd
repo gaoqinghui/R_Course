@@ -1,0 +1,140 @@
+---
+title: "Matrix"
+author: "Gao Qinghui"
+date: "2018年10月5日"
+output: html_document
+---
+
+
+
+# 创建矩阵
+
+赋值创建
+```{r}
+y = matrix(1:4, nrow=2)
+y
+```
+
+按行赋值
+```{r}
+y = matrix(1:4, nrow=2, byrow=TRUE)
+y
+```
+
+赋值创建
+```{r}
+y = matrix(nrow=2, ncol=2)
+y
+```
+
+# 矩阵运算
+
+## 线性代数运算
+
+```{r}
+
+y %*% y # 矩阵乘法
+
+y * y # 标量乘法，对应元素相乘
+
+y + y # 标量加法，对应元素相加
+
+t(y) #矩阵的转置
+
+solve(y)
+
+```
+## 矩阵索引（略）
+
+1. 抽取行
+2. 抽取列
+3. 抽取单个元素
+4. 抽取子矩阵（并赋值）
+
+# 矩阵元素筛选（略）
+
+
+# 函数
+
+## 对向量也适用的函数
+
+mean、median等，思考一个问题，得出的是一个数，还是一个向量，或是一个矩阵？
+
+## 其他函数
+
+按行合并：rbind
+
+按列合并: cbind
+
+返回矩阵元素的行数行号和列号: row, col
+
+行数、列数： nrow， ncol
+
+寻找最小、最大所在的位置 which.min, which.max
+
+维度 dim
+
+
+# 避免意外降维
+
+将某一行赋值给一个元素，那么该元素是向量，不存在两个维度，并非矩阵
+
+```{r}
+z = matrix(1:8, ncol = 2)
+z
+r = z[2,]
+r
+dim(r)
+```
+
+## 使用drop避免降维
+
+```{r}
+r = z[2,,drop=FALSE]
+r
+dim(r)
+```
+
+
+# 使用as.martix转换其他类型为矩阵
+
+```{r}
+u = 1:6
+u
+v = as.matrix(u)
+attributes(u)
+attributes(v)
+
+dim(v)
+
+w = v
+dim(w) = c(2,3)
+w
+
+```
+
+# 行列的命名: colnames, rownames
+
+```{r}
+z = matrix(1:8, ncol = 2)
+z
+r = z[2,]
+r
+dim(r)
+```
+
+# 高维数组（只作简单介绍，应用价值不大）
+
+```{r}
+a = matrix(1:6, nrow=3)
+b = matrix(7:12, nrow = 3)
+
+c = array(data = c(a, b), dim = c(3,2,2))
+
+attributes(c)
+
+```
+
+
+# 习题：编写回归函数或直接写回归的表示
+

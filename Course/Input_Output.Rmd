@@ -1,0 +1,244 @@
+---
+title: "Input_Output"
+author: "Gao Qinghui"
+date: "2018年10月10日"
+output: html_document
+---
+
+# 连接键盘与显示器
+
+scan(), readline(), print(), cat()
+
+## scan()函数
+
+使用scan()从文件中读取或用键盘输入一个向量，可以是数值型或者字符型向量
+
+```{r}
+setwd("C:/Users/Lenovo/Desktop/R_Course/Course") # 设定一下工作路径
+
+scan("z1.txt") # 数值型(整数)
+
+scan("z2.txt") # 数值型
+
+# scan("z3.txt") # 出错
+
+scan("z3.txt", what = "")
+
+scan("z4.txt", what = "")
+
+scan("abc.csv", sep = ",")
+```
+
+第二次由于有非整数，因此其他数也以浮点数的形式存储
+
+第三次出错，scan有可选参数what来设定变量的模式（mode），默认为double模式。设置what=""，此举将字符赋值给what，表明我们想用字符模式，也可以将what设置为任何字符串。
+
+默认情况，scan假定各项间以“空白字符”（whitespace）作为分隔符，空白字符包括空格、回车/换行符和水平制表符。
+
+如果是其他分隔符，可以用可选参数sep来设置，例如将sep设置为换行符，将每一行当作一个字符读入：
+
+```{r}
+x = scan("z3.txt", what="")
+
+x2 = scan("z3.txt", what="", sep="\n")
+```
+
+**也可以使用scan()函数从键盘读取数据，只需将文件名设定为一个空字符串**
+
+```{r}
+v = scan("") # 可选参数quiet=TRUE，不提示已读取的项目数
+```
+
+## readline()函数
+
+使用readline()可以从键盘输入单行数据
+
+```{r}
+w = readline() # 读取出来是一个字符串
+
+w
+
+get_birth = function(){
+  birth = readline("请输入您的生日，如XXXX-XX-XX:  ")
+  date = strsplit(birth, "-")[[1]]
+  cat("您的出生年份是：",date[1])
+}
+```
+
+调用readline时可以指定提示语作为参数：
+
+```{r}
+inits = readline("type your initials:  ")
+```
+
+## 输出到显示器
+
+1. 使用print函数（略）
+
+print只输出一个表达式，而且输出内容带编号
+
+2. 使用cat函数，调用cat需要一个行结束字符"\n"，如果没有，下一次调用cat函数还会在同一行输出内容，使用cat()打印的各个参数是以空格分隔的，不想使用空格分隔，可以设置sep
+
+```{r}
+print("abc")
+
+cat("abc\n")
+
+cat(c(1,2,3), "abc", "de\n")
+
+cat(c(1,2,3), "abc", "de\n", sep="")
+
+cat(c(1,2,3), "abc", "de\n", sep="\n")
+
+cat(c(5,12,13,8,88), sep=c(".",".",".","\n","\n"))
+
+```
+
+# 读写文件
+
+## 从文件中读取数据库或矩阵
+
+使用read.table读取数据框
+
+**注意：参数stringsAsFactors一般情况下设定为FALSE**
+
+```{r}
+z = read.table("z.txt", header=TRUE)
+
+
+z = read.csv("edf.csv", stringsAsFactors = F, header = F)
+```
+
+使用scan读取矩阵，注意byrow的参数
+
+```{r}
+x = matrix(scan("x.txt"), nrow=5, byrow = TRUE) # 注意byrow
+
+x = rnorm(100)
+y = 3*x + 2 + rnorm(100)
+lm_result = summary(lm(y~x))
+# cat(file = "lll.txt",lm_result)
+
+
+```
+
+使用read.table()先读取为数据框，再用as.matrix()将其转化为矩阵（最常用方法）
+
+```{r}
+read.matrix = function(filename){
+  as.matrix(read.table(filename))
+}
+```
+
+## 读取文本文件 readLines()
+
+每一列被当成一个字符串，读取结果是一个字符串向量
+
+```{r}
+z1 = readLines("z.txt")
+```
+
+## 连接的介绍
+
+连接（connection）是输入输出（I/O）操作的基本机制
+
+连接一般通过调用函数file()、url()或其他R函数创建，可以输入下面的命令查看这些函数的列表
+
+```{r}
+?connection
+```
+
+```{r}
+c = file("z.txt","r")
+
+readLines(c,n=1)
+
+readLines(c,n=1)
+
+readLines(c,n=1)
+
+readLines(c,n=1)
+
+readLines(c,n=1)
+```
+
+使用seek()，倒带从文件开始处重新读取
+
+```{r}
+c = file("z.txt","r")
+readLines(c,n=2)
+seek(con=c, where=0) # where=0表示从头读起，返回当前文件指针位置
+readLines(c,n=1)
+```
+
+## 通过URL在远程计算机上访问文件
+
+略
+
+## 写文件
+
+write.table
+
+```{r}
+kids = c("Jack", "Jill")
+ages = c(12,10)
+d = data.frame(kids,ages, stringsAsFactors = F)
+
+d
+
+# write.table(d, "kds")
+```
+
+如果想把矩阵输出文件，只需要声明不要行名列名即可，如下：
+
+```{r}
+# write.table(d, "d1", row.names=F, col.names = F)
+```
+
+
+cat()函数也可以用来输出文件，一次输出一部分，如下例
+
+```{r}
+cat("abc\n", file="u")
+
+cat("de\n", file="u", appedn=T)
+
+cat(file="v", 1, 2, "xyz\n") # 写多个字段
+```
+
+使用writeLines()函数，如果使用的是连接，则必须设定参数"w"表明是要写文件而非读取
+
+```{r}
+c = file("www","w")
+
+writeLines(c("abc", "de", "f"), c)
+
+close(c)
+```
+
+## 获取文件和目录信息
+
+file.info()：参数是表示文件名称的字符串向量，函数会给出每个文件的大小、创建时间、是否为目录等信息
+
+dir()：返回一个字符向量，列出目录中所有文件的名称，指定可选参数recursive=TRUE，结果将把第一个参数下面整个目录树都显示出来
+
+file.exists()：返回一个布尔值，表示作为第一个参数的字符串向量中给定的每个文件名是否存在
+
+getwd()和setwd()：用于确定或改变当前工作目录
+
+使用?files查看所有文件和目录相关的函数
+
+额外知识：使用paste()和paste0()来拼接目录
+
+# 访问互联网（忽略）
+
+# 读取表格
+
+## write.csv()
+
+## Excel操作（高庆辉自己制作专题）
+
+
+
+
+

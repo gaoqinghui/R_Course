@@ -1,0 +1,153 @@
+---
+title: "R_review"
+author: "Gao Qinghui"
+date: "September 26, 2018"
+output: html_document
+---
+
+# 获取帮助
+
+1. ?
+2. help
+3. website，搜索技巧，在关键词前加一个cran，例如 "cran arima"，这样可以搜索到对应的package
+4. 如果是需要相关的领域，那么请查询[Cran task review](https://cran.r-project.org/web/views/)
+5. **这是最重要也是最实用的途径，请直接联系高庆辉**
+
+# 数据结构
+
++ 标量（最基础的元素）
+    + 数值型（细分有integer和numeric，但是问题不大，一般情况下，除了年份、日期这些明确是整数的，其他的都使用numeric不会产生问题）
+    + 字符串（使用双引号或单引号括起来）
+    + 其他（日期等，一般不常用）
++ 向量（一列上述的基本元素组成，向量中的元素都是同样的类型（class））
++ 矩阵（两个维度的具有相同类型的元素构成）
++ **数据框**（也是两个维度，不同在于同一列的元素的类型必须一样，但不同列之间的类型可以不一样）
++ 列表（可以用于存储复杂结构的数据，数据间的类型不需要相同）
+
+## 查询数据类型
+```{r}
+str_1 = "Love"
+integer_1 = 1 # 在默认情况下，都是整数
+numeric_1 = 2.0
+
+vector_1 = c(1, 2, 3)
+vector_2 = seq(from = 1, to = 24, by = 2)
+
+
+matrix_1 = matrix(data = vector_2, nrow = 3) # 一般情况下，元素一列一列的填充，填充了一列再填充另一列，需要换方法则修改byrow参数
+
+dataframe_1 = data.frame(atr1 = 1:3, atr2 = c("a", "b", "c"), atr3 = 5:7)
+
+list_1 = list(a = str_1, b = vector_1, c = matrix_1, d = list(vector_1, matrix_1))
+
+class(integer_1) # 在默认情况下，都是整数
+class(numeric_1)
+class(str_1)
+
+class(vector_1)
+vector_1
+
+class(dataframe_1)
+dataframe_1
+
+class(matrix_1)
+matrix_1 # 一般情况下，元素一列一列的填充，填充了一列再填充另一列
+
+class(list_1)
+list_1
+```
+
+# 向量型数据的索引
+
+## 数字索引
+使用中括号[index]来索引，矩阵和数据库使用[index1, index2]索引，列表的索引类似，但列表的维度需要视列表的具体情况而定
+
+列表的索引[]和[[]]不一样，[]取出来还是列表，[[]]取出来是构成列表元素的类型
+
+R语言的第一个元素的索引为1
+```{r}
+vector_1[1] # 第一个元素
+
+matrix_1[2,3] # 第二行第三列
+matrix_1[2,] # 第二行
+matrix_1[,3] # 第三列
+
+dataframe_1[1,3] # 第一行第三列
+dataframe_1[1,] # 第一行
+dataframe_1[,3] # 第三列
+
+list_1[2] # 列表
+list_1[[2]] # 向量
+
+list_1[2][2] # 这样会出错，因为先取出一个列表，而这个列表只有一个元素
+list_1[[2]][2] # 直接取出一个向量，再取向量的元素，因此不会出错
+list_1[[3]][2,3] # 同样的索引方法
+```
+
+特殊的索引：负数
+
+负数的含义为删除对应的元素（行/列）
+
+```{r}
+vector_1[-1] # 除去第一个元素的向量
+
+matrix_1[-2,3] # 除去第二行的所有第三列元素
+
+
+```
+
+
+## 数据框和列表的按属性名索引
+
+使用["attr_name"]或\$attr_name进行索引。使用["attr_name"]索引，取出来的元素仍保持同样的属性，列表取出来后仍是列表，数据框仍是数据框；使用\$attrname索引则变成最简洁的元素
+```{r}
+dataframe_1$atr1 # 向量
+
+dataframe_1["atr1"] # 仍是数据框
+
+list_1$b # 向量
+
+list_1["b"] # 仍是列表
+
+dataframe_1$atr1[1]
+
+```
+
+## 其他数据类型
+比较少用，仅作介绍，一般使用attributes、names、class来获取这类比较少用数据的属性，注意，这类数据因数据不同而异，多使用帮助以获知如何使用。
+
+```{r}
+a = rnorm(100)
+b = 2*a + rnorm(100)
+lm_1 = lm(b~a) # 线性回归
+
+class(lm_1)
+attributes(lm_1)
+names(lm_1)
+
+lm_1
+```
+
+
+
+# 工作目录
+```{r}
+getwd() # 获取工作目录
+wd = getwd()
+
+setwd(wd) # 设定工作目录
+
+dir()
+```
+
+
+# 使用包
+```{r}
+# 使用install.packages()来安装包
+# 使用library()载入安装包
+```
+
+注意，安装时，输入的参数是字符串，如install.packages("包的名字")，载入时不需要
+
+
+

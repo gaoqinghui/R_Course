@@ -1,0 +1,897 @@
+---
+title: "R_structure"
+author: "Gao Qinghui"
+date: "2018年10月7日"
+output: html_document
+---
+
+# 控制语句
+
+## 循环
+
+### for循环
+
+for循环用于已知循环次数，最适用的例子为对某一列表或者之类的逐个进行循环计算
+
+for(某个元素 in 列表){
+  do something
+}
+
+例子：打印1：10
+
+```{r}
+for(i in 1:10){
+  cat("该次循环为：") # cat函数也是打印，不同的是，不存在计数
+  cat(i)
+  cat("\n")
+}
+```
+
+
+### while循环
+
+while循环适用于不知道要运行多少次的循环
+
+
+
+while(条件满足){
+  do something
+}
+
+例子：
+```{r}
+i = 1
+
+while(i <= 10){i = i + 4}
+```
+
+
+也可以**break**跳出循环
+
+```{r}
+i = 1
+while(TRUE){
+  i = i +4
+  if(i > 10){break}
+}
+```
+
+因为while(TURE)是一定成立的，所以必须在里面设置跳出循环的条件
+
+### repeat循环（相当于while(TRUE)）
+
+```{r}
+i = 1
+repeat{
+  i = i +4
+  if(i > 10){break}
+}
+```
+
+repeat必须在里面设置跳出循环的条件
+
+### break（跳出整个循环）
+
+### next语句（跳过接下来的句，直接进行下一次的循环）
+
+例子：打印偶数
+
+如何解读下方的代码
+
+```{r}
+for(i in 1:10){
+  if(i %% 2 !=0){next}
+  print(i)
+}
+```
+
+### 对非向量集合的循环
+
+向量集合（向量、矩阵、数据框）
+
+非向量（list）
+
+解决办法：
+
+1. lapply
+2. 使用get函数
+
+#### get函数
+
+get函数（输入参数是字符串，变量名的字符串，输出为对应变量）,非常有用
+
+```{r}
+a = c(1,2,3)
+b = matrix(1:4,nrow=2)
+
+c_list = c("a","b")
+
+for(i in c_list){
+  c = get(i)
+  print(c)
+}
+```
+
+
+
+```{r}
+u = matrix(c(1,2,3,1,2,4),nrow=3)
+v = matrix(c(8,12,20,15,10,2),nrow=3)
+
+for(m in c("u","v")){
+  z = get(m)
+  print(lm(z[,2]~z[,1]))
+}
+```
+
+#### get函数也可以用于函数
+
+```{r}
+a = function(x,y){x+y}
+
+
+get("a")(1,2)
+
+```
+
+
+额外的知识：ls()函数
+
+ls()可以用来列出环境中的所有变量和函数
+
+请亲自尝试一下
+
+
+## 判断结构（if-else）
+
+if
+
+if-else
+
+if_else_if_else ...
+
+
+示例：
+
+```{r}
+for(i in 1:10){
+  if(i < 3){
+    print(i)
+    print("hello")
+  }else if(i < 6){
+    print(i)
+    print("Hi")
+  }else{
+    print(i)
+    print("Bo")
+  }
+}
+```
+
+
+使用if-else赋值
+
+```{r}
+x = 3
+y = if(x==2) x else x+1
+y
+# 或是ifesle
+y = ifelse(x==2,x,x+1)
+y
+```
+
+# 算术与逻辑运算符
+
+## 二元运算
+
+1. 加法：+
+2. 减法：-
+3. 乘法：*
+4. 除法：/
+5. 乘幂：^
+6. 模运算（求余）: %%
+7. 整数除法：%/%
+
+## 逻辑判断
+
+### 对比
+
+1. 是否相等：==
+2. 大于、小于等：>,<,>=,<=
+3. 不等于!=
+
+### 标量的或与非
+
+1. 标量或：||
+2. 标量与：&&
+
+### 向量的或与非
+
+当目标是一个数时，向量和标量的或与非是一样的结果
+
+成为向量或、向量与，意味着运算结果是向量
+
+1. 向量或：|
+2. 向量与：&
+
+### 非(向量)
+
+!
+
+#### 向量和标量逻辑的注意事项
+
+
+TRUE 和 FALSE 可以简写为T、F
+
+```{r}
+x = c(T,F,T)
+y = c(T,T,F)
+
+x&y
+
+x[1]&y[1]
+
+x && y
+
+if(x[1] && y[1]){print("both TRUE")}
+
+if(x && y){print("both TRUE")}
+
+# 为什么下面的会出现警告
+if(x & y){print("both TRUE")}
+
+```
+
+警告的原因if的判断只能是一个逻辑值，不能是逻辑向量
+
+
+## 参数的默认值（简述）
+
+简述，不做示例
+
+```{r}
+?read.csv
+```
+
+如果不是用默认值，那么调用函数时必须给出参数的名称，这被称为”具名实参“
+
+“惰性求值”：除非有必要，否则不计算表达式的值
+
+## 返回值
+
+显式调用：return
+
+也可以直接将需要返回的值写出来
+
+```{r}
+f1 = function(x){x+1}
+
+f2 = function(x){return(x+1)}
+
+f1(1)
+
+f2(1)
+```
+
+代码建议：尽量不显示使用return
+
+原因：return会延长执行时间
+
+但实际应用中，一般没有任何区别，我建议还是使用return这个函数，能够让代码更清晰
+
+# 数列练习题（主要考察编程思想）：贪心算法，也叫贪婪算法
+
+问题描述，购买价格为P的商品，使用你手上的钱刚好凑到P来购买，避免找零，提供一个纸币的搭配方案。
+贪婪算法：你有0.1、0.5、1、5、10、20、50、100这8种纸币，对于要购买的物品价格P，先拿出100元，如果100\<P，则解决方案中第一张是100元纸币，否则拿出50元进行对比。
+
+从大到小，直到刚好凑到价格P为止。
+
+输入：价格P
+输出：解决方案的数值型向量
+示例：输入价格257.6，应该输出解决方案c(100,100,50,5,1,1,0.5,0.1)
+
+延伸：贪婪算法是比较好的算法，但不一定是最优算法，假如P是7，你的纸币种类有1元、3元、4元、5元，那么使用贪婪算法得到的解决方法是1个5元和2个1元，需要3张纸币，而更好的算法为1张3元和1张4元，仅需两张纸币。
+
+
+#### 函数可以返回复杂对象（函数等）
+
+```{r}
+g = function(){
+  t = function(x)(return(x^2))
+  return(t)
+}
+
+g()
+
+g()(2) # 尝试解读这个代码
+```
+
+## 函数也是对象
+
+函数也是对象，所以可以进行对象操作
+
+甚至“{”也是函数
+
+验证“{”是函数：
+
+```{r}
+?"{"
+```
+
+
+## formals and body
+
+formals: 获得函数的参数
+
+body：获得函数的执行代码
+
+```{r}
+a = function(x=1, y){
+  x + y
+}
+
+formals(a) # 注意默认值x
+
+body(a)
+```
+## 使用函数名获得函数的内容
+
+```{r}
+mean # mean为内置函数
+
+abline
+```
+## 使用page查看篇幅很长的代码
+
+
+```{r}
+page(abline)
+```
+
+## 使用edit重新编辑代码（一般不使用）
+
+```{r}
+edit(abline)
+a = edit(abline) # 建议这样使用,为修改后的代码定义新的函数名
+```
+
+
+## 使用formals和body改变函数主体
+
+必须使用quote(),函数主体属于“call”类，调用quote才是“call”类，否则相当于只是赋值
+
+
+```{r}
+x = 1
+
+g = function(h,a,b){h(a,b)}
+
+g
+
+body(g) = quote(2*h + 3) # 改变函数主体
+
+g
+
+g(3)
+```
+
+# 环境和变量作用域问题
+
+R语言中，函数被正式称为“闭包”（closure
+），参数包含参数、函数体和**“环境（environment）”**
+
+
+## 顶层环境
+
+使用environment获取函数对应环境
+
+```{r}
+w = 12
+
+f = function(y){
+  d = 8
+  h = function(){return(d*(w+y))}
+  return(h())
+}
+
+environment((f))
+```
+
+此处，f在顶层创建，于是处于顶层环境
+
+ls()和ls.str()
+
+ls.str()可以获取更多信息
+
+```{r}
+ls.str()
+```
+
+## 变量作用域的层次
+
+作用域（scope）
+
+前例中，h()是f()的局部变量，d相对于h()是全局变量（同一个层次）
+
+```{r}
+f(2) #解释一下代码的运行原理
+```
+
+R语言，如果在当前层次找不到变量，会往上一层去找（平常的编程，我也经常会忽略这一点，虽然影响不大，但是了解了以后还是要注意）
+
+不嵌套的对比,分析
+```{r}
+# 不嵌套
+
+f = function(y){
+  d = 8
+  return(h())
+  }
+
+h = function(){return(d*(w+y))}
+
+# f(5)
+```
+
+
+解决办法：将d和y设为参数
+
+```{r}
+f = function(y){
+  d = 8
+  return(h(d,y))
+  }
+
+h = function(dee,yyy){return(dee*(w+yyy))}
+
+f(5)
+```
+
+最后一种变种
+
+```{r}
+f = function(y,ftn){
+  d = 8
+  print(environment((ftn)))
+  return(ftn(d,y))
+  }
+
+h = function(dee,yyy){return(dee*(w+yyy))}
+
+w = 12
+f(3,h)
+```
+
+### ls()的进一步讨论
+
+ls()会返回当前的所有局部变量（参数）
+
+```{r}
+f = function(y){
+  d = 8
+  return(h(d,y))
+  }
+
+h = function(dee,yyy){
+  print(ls())
+  print(ls(envir = parent.frame(n=1)))
+  return(dee*(w+yyy))
+  }
+
+f(2)
+```
+
+在parent.frame()中，参数n设定了要沿函数调用链向上追溯几个框架，此处得到f()的框架
+
+### 函数基本没有副作用
+
+函数不会修改非局部变量
+
+```{r}
+a = 1
+f = function(){
+  a = a+1
+  a
+}
+
+f
+
+a # a的值并没有改变
+```
+
+# 向上级层次进行写操作
+
+前文所述，对上层级无法进行写操作修改上层的变量
+
+如果需要对上级层次进行任意操作，有两种方式：
+
+1. 使用超赋运算符<<-
+2. 使用assign()
+
+## 超赋运算符对非局部变量进行写操作
+
+```{r}
+two = function(u){
+  u <<-2*u
+  z <-2*z
+  k = 2*k
+}
+
+x = 1
+z = 3
+k = 3
+
+# u: u不存在
+
+two(x)
+
+x
+
+u
+
+z
+
+k
+```
+
+超赋运算符会一层层往上寻找变量，如果没有找到，将会选取全局层次
+
+```{r}
+f = function(){
+  inc = function(){x <<- x+1}
+  x = 3
+  inc()
+  return(x)
+}
+
+f() # 出错，同等级下的x不会被搜寻到
+```
+
+## 使用assign()函数对非局部变量进行写操作
+
+```{r}
+two = function(u){
+  assign("u", 2*u, pos=.GlobalEnv)
+  z = 2*z
+}
+
+x = 1
+z = 1
+
+two(x)
+
+x
+u
+
+```
+## 闭包
+
+闭包包含一个可创建局部变量的函数，并创建另一个函数可以访问该变量
+
+例子：
+
+```{r}
+counter = function(){
+  ctr = 0
+  f = function(){
+    ctr <<- ctr + 1
+    cat("this count currently has value", ctr, "\n")
+  }
+  return(f)
+}
+```
+
+
+探讨细节之前尝试以下代码：
+
+```{r}
+c1 = counter()
+c2 = counter()
+
+c1
+
+
+
+c1()
+
+c1()
+
+c2()
+
+c2()
+
+c2()
+
+c1()
+c2
+```
+
+每次运行counter()，运行到f()，都会调用返回值给ctr
+
+c1()和c2()成了独立的计数器
+
+
+思考：有什么应用
+
+# 递归（重要的编程思想）
+
+什么是递归（使用递归函数f()来解决x类型的问题）：
+1. 将x类型的问题划分为一个或更小的x类型问题
+2. 在f()中，对每个较小问题调用f()函数
+3. 然后再在f()中，将(2)中的所有结果整合起来解决这个原始问题
+
+## 例1：斐波那契数列(非常经典)
+
+斐波那契数列，前两个数是1，剩下的数的值都是对应前两个数的和
+
+1，1，2，3，5，8，13
+
+任务：计算斐波那契数列的第n个数是多少
+
+```{r}
+Fibonacci = function(n){
+  if(n > 2){
+    x = Fibonacci(n-1) + Fibonacci(n-2)
+  }else{
+    x = 1
+  }
+  x
+}
+
+
+Fibonacci(4)
+```
+
+
+## Quicksort的具体实现
+
+对c(5,4,12,13,3,8,88)进行排序，先将所有元素与5进行比较，形成两个字向量，一个是小于5的c(4,3)，另一个是大于等于5的c(12,13,8,88)
+
+再在子向量上调用Quicksort排序函数，返回c(3,4)和c(8,12,13,88)。将两个子向量组合得到c(3,4,5,8,12,13,88)正是所求
+
+```{r}
+# qs = fucntion(x){
+#   if(length(x)<=1) return(x) # 终止条件，没有该条件会怎么样？
+#   pivot = x[1]
+#   therest = x[-1]
+#   sv1 = therest[therest<pivot]
+#   sv2 = therest[therest>=pivot]
+#   sv1 = qs(sv1)
+#   sv2 = qs(sv2)
+#   return(c(sv1,pivot,sv2))
+# }
+```
+
+递归非常抽象，而且非常浪费内存
+
+## 拓展举例：二叉查找树（非常有难度，而且非常抽象）
+
+二叉查找树是一个计算机数据结构，具有如下性质
+
+对于二叉查找树的每一个节点，左子树的值如果存在，将小于或者等于父节点的值。右节点如果存在，将大于父节点的值。
+
+C的实现：使用结构体（struct），类似R中的列表，在C中，每一个点存储的内容有节点值，左子树的指针和右子树的指针
+
+R缺少指针变量，在过去FORTRAN时代，也没有指针，链接的数据结构是用长数组实现的。在C中，一个指针就是一个内存地址，在R中却是一个数据索引
+
+R的实现：具体而言，创建一个矩阵，具有三列。每一列代表一个节点，这一行第三个元素存储节点的值，第一个和第二个元素存储左子树和右子树的链接。
+
+在R中为矩阵分配空间很耗费时间，为了摊销内存分配的时间，我们每次为矩阵的好几行同时分配新的空间，而不是逐行分配。每次分配的行数将以变量inc给出。我们使用递归方法实现这个算法。
+
+厦门的代码只包含插入新数据和遍历树的例程
+```{r}
+# routines to create trees and insert items into them are included
+# below; a deletion routine is left to the reader as an exercise
+
+# storage is in a matrix, say m, one row per node of the tree; if row 
+# i contains (u,v,w), then node i stores the value w, and has left and
+# right links to rows u and v; null links have the value NA 
+
+# the tree is represented as a list (mat,nxt,inc), where mat is the
+# matrix, nxt is the next empty row to be used, and inc is the number of
+# rows of expansion to be allocated whenever the matrix becomes full
+
+# print sorted tree via in-order traversal
+printtree <- function(hdidx,tr) {  
+   left <- tr$mat[hdidx,1]
+   if (!is.na(left)) printtree(left,tr)  
+   print(tr$mat[hdidx,3])  # print root
+   right <- tr$mat[hdidx,2]
+   if (!is.na(right)) printtree(right,tr)  
+}
+
+# initializes a storage matrix, with initial stored value firstval
+newtree <- function(firstval,inc) {
+   m <- matrix(rep(NA,inc*3),nrow=inc,ncol=3)
+   m[1,3] <- firstval
+   return(list(mat=m,nxt=2,inc=inc))
+}
+
+# inserts newval into the subtree of tr, with the subtree's root being
+# at index hdidx; note that return value must be reassigned to tr by the
+# caller (including ins() itself, due to recursion)
+ins <- function(hdidx,tr,newval) {  
+   # which direction will this new node go, left or right?
+   dir <- if (newval <= tr$mat[hdidx,3]) 1 else 2
+   # if null link in that direction, place the new node here, otherwise
+   # recurse
+   if (is.na(tr$mat[hdidx,dir])) {  
+      newidx <- tr$nxt  # where new node goes
+      # check for room to add a new element
+      if (tr$nxt == nrow(tr$mat) + 1) {  
+         tr$mat <- 
+            rbind(tr$mat, matrix(rep(NA,tr$inc*3),nrow=tr$inc,ncol=3))
+      }
+      # insert new tree node
+      tr$mat[newidx,3] <- newval
+      # link to the new node
+      tr$mat[hdidx,dir] <- newidx
+      tr$nxt <- tr$nxt + 1  # ready for next insert
+      return(tr)
+   } else tr <- ins(tr$mat[hdidx,dir],tr,newval)
+}
+```
+
+
+```{r}
+x = newtree(8,3)
+
+x
+
+x = ins(1,x,5)
+x
+
+x = ins(1,x,6)
+x
+
+x = ins(1,x,2)
+x
+```
+
+
+# 置换函数
+
+考虑先前的一个例子
+
+```{r}
+x = c(1,2,4)
+
+names(x)
+
+names(x) = c("a","b","ab")
+
+names(x)
+
+x
+```
+
+其中names(x) = c("a","b","ab")这个代码不合理，竟然可以把数赋值给一个函数调用的结果
+
+这种特殊现象的解释依赖于R语言中的置换函数(replacement functions)
+
+前面那行代码实际是执行下面这行代码的结果
+
+x = "names <- "(x,value=c("a","b","ab"))
+
+这里调用的是一个名为names<-()的函数
+
+## 什么是置换函数
+
+任何左边不是标识符（变量名）的赋值语句都可以看作是“置换函数”
+
+例子：
+
+g(u) = v
+
+R语言会尝试用以下方式执行：
+
+u = "g<-"(u,value=v)
+
+
+因此，x[3]<-8也是置换语句
+
+“[”()用于读向量元素，“[<-”()用于写操作
+
+```{r}
+x = c(8,88,5,12,13)
+x
+
+x[3]
+
+"["(x,3)
+
+x = "[<-"(x,2:3,value=99:100) # 等同于x[2:3] = 99:100
+
+x
+```
+
+## 拓展案例：可记录元素修改次数的向量类
+
+```{r}
+# class "bookvec" of vectors that count writes of their elements
+
+# each instance of the class consists of a list whose components are the
+# vector values and a vector of counts
+
+# construct a new object of class bookvec
+newbookvec <- function(x) {
+   tmp <- list()
+   tmp$vec <- x  # the vector itself
+   tmp$wrts <- rep(0,length(x))  # counts of the writes, one for each element
+   class(tmp) <- "bookvec"
+   return(tmp)
+}
+
+# function to read
+"[.bookvec" <- function(bv,subs) {
+   return(bv$vec[subs])
+}
+
+# function to write
+"[<-.bookvec" <- function(bv,subs,value) {
+   bv$wrts[subs] <- bv$wrts[subs] + 1  # note the recycling
+   bv$vec[subs] <- value
+   return(bv)
+}
+```
+
+
+测试一下
+
+```{r}
+b = newbookvec(c(3,4,5,5,12,13))
+
+b
+
+b[2]
+
+b[2] = 88
+
+b[2]
+
+b$wrts
+```
+
+# 写函数代码的工具
+
+简单的通过交互式即可
+
+## 文本编辑器和集成开发环境
+
+集成开发环境（Integrated Developmetnt Environments, IDE）
+
+在IDE中编写代码，然后用source()将代码文件读入R中
+
+请自行尝试
+
+## edit()函数
+
+如，想要修改f1()可以输入以下命令
+
+f1 = edit(f1)
+
+f1 = edit(f2)
+
+将修改后的f1或者f2代码返回给f1
+
+# 创建自己的二元运算符
+
+写一个以%开始和结束的函数就可以返回哦他那个样类型的值
+
+```{r}
+"%a2b%" = function(a,b) return(a+2*b)
+
+3 %a2b% 5
+```
+
+# 匿名函数
+
+f = function(x) x/c(2,8)
+y = apply(z,1,f)
+y
+
+使用匿名函数
+
+y = apply(z,1,function(x) x/c(2,8))
+y
+

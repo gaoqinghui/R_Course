@@ -1,0 +1,118 @@
+---
+title: "List"
+author: "Gao Qinghui"
+date: "2018年10月5日"
+output: html_document
+---
+
+# List: 任意的结构
+
+List 可以处理非常复杂的结构，例如文本、网页等
+
+举例：一个雇员
+
+```{r}
+jack = list(name="jack", salary = 5500, union = TRUE)
+
+# 获知jack的工资
+jack$salary
+
+```
+
+# 列表的常规操作
+
+## 列表索引（略，已提过）
+
+## 在列表中新增组件（元素）
+```{r}
+jack = list(name="jack", salary = 5500, union = TRUE)
+
+jack
+
+# 增加性别
+
+jack$sex = "boy"
+
+jack
+
+```
+
+## 删除组件: 将值设为NULL
+
+```{r}
+jack$union = NULL
+```
+
+## 获取列表长度：lenght
+
+```{r}
+length(jack)
+```
+
+# 访问列表元素和值
+
+使用names获取标签
+
+```{r}
+names(jack)
+```
+
+
+使用unlist获取列表的值
+
+```{r}
+ulj = unlist(jack)
+ulj
+
+class(ulj)
+```
+
+unlist 返回的是向量，当列表内都是数值型，则返回数值向量
+```{r}
+z = list(a=5, b=12, c=13)
+y = unlist(z)
+
+class(y)
+
+y
+```
+
+问题：如果又有数值型又有字符型会怎么样？
+
+
+# 递归型列表
+
+```{r}
+b = list(u=5, v=12)
+c = list(w=13)
+a = list(b,c)
+
+a
+length(a)
+```
+
+拼接函数c()的可选参数recursive可以将原列表“压平”
+
+```{r}
+c(list(a=1,b=2,c=list(d=5,e=9)))
+
+c(list(a=1,b=2,c=list(d=5,e=9)), recursive = T)
+```
+
+# 列表的应用：将列表作为输入
+
+任务描述：有若干实习生的数据（list），按照一定的标准筛选可以留用的实习生
+
+下面的数据记录了实习生的姓名，年龄，毕业年份，和5次考核的成绩
+```{r}
+Jack = list(name="Jack", age=21, graduate = 2019, score=c(4,5,3,4,5))
+Rose = list(name="Rose", age=20, graduate = 2019, score=c(4,5,1,4,5))
+Tim = list(name="Tim", age=16, graduate = 2019, score=c(4,5,3,4,5))
+Kate = list(name="Kate", age=24, graduate = 2020, score=c(5,4,3,4,5))
+Sam = list(name="Sam", age=23, graduate = 2019, score=c(3,4,3,3,3))
+```
+
+留用条件为，年龄在18岁及以上，2019年的应届毕业生，且5次考核平均分在3.5以上，且所有考核分数均大于等于3
+
+写出判断是否留用的函数，输入的参数为实习生数据（列表）
+

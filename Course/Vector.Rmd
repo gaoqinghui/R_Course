@@ -1,0 +1,376 @@
+---
+title: "Vector"
+author: "Gao Qinghui"
+date: "September 26, 2018"
+output: html_document
+---
+
+# 向量的创建
+1. c()
+2. num1:num2
+3. seq()
+4. rep()
+
+```{r}
+v1 = c(1,3,5)
+v2 = 2:6
+v3 = seq(from=3, to =7, by = 1.5)
+v4 = c("a","bcd","3") # 元素是字符串
+v5 = rep(8,4)
+
+v1
+v2
+v3
+v4
+v5
+```
+
+# 向量的属性操作
+1. 如何向特定位置插入元素？
+
+```{r}
+v5 = v1
+v5 = c(v5[1:2], 8, v5[3]) # 在第二个和第三个元素间插入一个元素
+```
+
+
+```{r}
+v5 = c(1:10)
+v5 = c(v5[1:2], 8, v5[3:length(v5)]) # 在第二个和第三个元素间插入一个元素
+v5
+```
+
+练习1：编写一个对特定向量特定位置插入一个或多个元素的函数
+输入：一个已有的向量，需要插入的位置，需要插入的元素
+输出：插入元素后的向量
+
+example:
+input: f(a=c(1,2,3), loc=2, insert = c(1,2))
+output: c(1,1,2,2,3)
+
+how to write a function:
+
+insert_element = function(vec, loc, insert){
+  # 代码
+  return(element)
+}
+
+insert_element(vec, loc, insert)
+
+
+2. 如何删除特定位置的元素？
+
+# 第一个办法
+```{r}
+v6 = v4
+v6
+v6 = c(v6[1],v6[3]) # 删除第二个元素
+v6
+```
+
+# 第二个办法
+```{r}
+v6 = v4
+v6
+v6 = v6[-2] # 删除第二个元素
+v6
+```
+
+
+3. 如何更改特定位置的元素？
+
+```{r}
+v6 = v4
+v6
+v6[1] = "该元素已被改变"
+v6
+```
+
+4. 如何获取向量的长度
+
+# 使用length这个函数
+```{r}
+length(v1)
+length(v2)
+length(v3)
+```
+
+# 应用：循环
+
+5. 向量之间的运算，向量对应元素的相加，相减等(向量化的运算)
+
+```{r}
+v1 = 1:3
+v2 = seq(from = 1, to = 6, by = 2)
+v3 = 1:2
+```
+
+向量长度一样
+```{r}
+v1 + v2
+v1 * v2
+v1 / v2
+```
+
+向量长度不一样:循环补齐
+```{r}
+v1*2
+v2+3
+v1 + v3
+v3 + v1
+v2 * v3
+```
+
+循环补齐原理：最短的向量一直循环至补齐长度为止
+
+
+# 逻辑运算
+
+all 和 any 的作用，是否全部都满足条件及是否存在符合条件
+
+```{r}
+v1
+v1 > 0
+
+all(v1>0)
+any(v1>0)
+
+(v1>2)[2] # 如何应用
+v1[2]>2
+
+```
+
+
+# 其他运算
+
+基本运算 + - * / %%
+```{r}
+v1 = 1:3
+v2 = seq(from = -3, to = 3, by = 0.255)
+```
+
+
+加总 sum
+```{r}
+sum(v1)
+```
+
+平均值 mean
+```{r}
+mean(v1)
+```
+
+绝对值 abs
+```{r}
+abs(v2)
+```
+
+累积求和 cumsum
+```{r}
+cumsum(v1)
+cumsum(v2)
+```
+
+平方根 sqrt
+```{r}
+sqrt(v1)
+```
+
+指数 ^
+```{r}
+v2^2
+```
+四舍五入 round
+```{r}
+round(v2)
+round(v2,2)
+```
+
+类似：floor, ceiling, trunc（直接取整数部分）
+
+符号函数 sign
+```{r}
+a =  c(1, -2, 3, -5, 0, 5, 6, -8)
+a
+sign(a)
+```
+
+
+练习二：用sign写一个绝对值函数
+
+
+
+做差 diff （计算增量）
+符号函数 sign
+```{r}
+a =  c(1, -2, 3, -5, 5, 6, -8)
+a
+diff(a)
+```
+
+最小值和最大值 min, max
+
+寻找哪个是最小值和哪个是最大值 ，输出下标which.min, which.max
+
+
+
+ 
+# NA 和 NULL
+
+## NA
+
+NA是缺失值会导致部分函数无法计算
+
+
+```{r}
+a = c(1,2,3,NA,5,6,7)
+mean(a)
+```
+
+如何判断NA：is.na
+```{r}
+z = NA
+class(z)
+is.na(z)
+```
+
+解决办法(习题）：
+
+1. 手动移除NA（na.omit, is.na）
+
+```{r}
+a = c(1,2,3,NA,4)
+# na.omit(a)
+is.na(a)
+a[!is.na(a)]
+```
+
+
+2. 部分函数内置的参数选项(na.rm, na.omit)
+
+```{r}
+mean(a)
+mean(a, na.rm=TRUE)
+abs(a)
+sum(a)
+sum(a,na.rm=T)
+
+# 不使用na.rm参数
+sum(a[is.na(a)])
+```
+
+
+## NULL
+
+NULL 一般在循环中用于创建向量
+```{r}
+z = NULL
+for(i in 1:10)if (i%%2 ==0) z = c(z,i)
+z
+```
+
+如何判断NULL：is.null
+```{r}
+z = NULL
+class(z)
+is.na(z)
+is.null(z)
+```
+
+
+## 对长度的影响
+
+NULL不计长度，NA计长度
+
+```{r}
+u = NULL
+length(u)
+v = NA
+length(NA)
+```
+
+# 筛选
+
+## 使用中括号和逻辑进行筛选（会包含NA)
+```{r}
+x = c(6, 1:3, NA, 12)
+x[x>5]
+```
+
+## 使用subset进行筛选（会排除NA）
+```{r}
+x = c(6, 1:3, NA, 12)
+subset(x,x>5)
+```
+
+## 使用选择函数which筛选（会排除NA）
+
+which会返回满足条件的序号
+```{r}
+x = c(6, 1:3, NA, 12)
+which(x > 6)
+x[which(x > 6)]
+```
+
+# ifelse函数
+
+```{r}
+x = 1:10
+y = ifelse(x%%2 == 0, 5, 12)
+```
+
+
+# 测试向量相等
+
+习题
+```{r}
+a = 1:3
+b = c(1,4,3)
+```
+
+使用 a==b会发生什么结果？
+
+```{r}
+a == b
+```
+
+解决办法1（习题，提示，前面提到过的一个函数）：
+```{r}
+all(a==b)
+!any(a!=b)
+```
+
+
+解决办法2： identical函数
+```{r}
+identical(a,b)
+```
+
+注意陷阱（不同的类型并不相同）
+
+```{r}
+x = 1:2
+y = c(1,2)
+class(x)
+class(y)
+all(x==y)idenct
+identical(x,y) # 尽量不要使用identical函数
+```
+
+
+# 向量的名称
+
+names
+
+```{r}
+x = c(1,2,4)
+names(x) = c("a","b","ab")
+x
+x["b"]
+```
+
+
+```{r}
+names(x) = NULL
+x
+```

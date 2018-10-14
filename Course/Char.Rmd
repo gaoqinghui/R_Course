@@ -1,0 +1,110 @@
+---
+title: "Char"
+author: "Gao Qinghui"
+date: "2018年10月10日"
+output: html_document
+---
+
+# 字符串操作函数概述
+
+## grep搜索给定的子字符串pattern，返回位置
+
+grep(pattern,x)语句在字符串向量x里搜索给定的子字符串pattern， 如果x有n个元素，即包含n个字符串，则grep会返回一个长度不超过n的向量。 这个向量的每个元素是x的索引，表示在索引对应的元素x[i]中有与pattern匹配的子字符串。
+
+```{r}
+grep("Pole", c("Equator","North Pole", "South Pole"))
+
+grep("pole", c("Equator","North Pole", "South Pole")) # 找不到，返回空向量
+```
+
+## nchar()
+
+```{r}
+nchar("South Pole")
+
+nchar(factor("abc")) # 会出问题
+```
+
+## paste()和paste0()
+
+```{r}
+a0 = "0"
+b0 = "a"
+
+a3 = 1:3
+b3 = c("a","b","c")
+
+paste(a0,b0)
+
+paste(a0,b0,sep="")
+
+paste0(a0,b0)
+
+paste(a0,b0,sep=".")
+
+paste(a3,b3)
+
+paste0(a3,b3)
+
+paste(a3,b3,collapse = " ")
+```
+
+## sprintf()
+
+按一定格式将若干组件组成字符串
+
+```{r}
+i = 8
+s = sprintf("the square of %d is %f", i, i^2)
+```
+
+## substr() 返回给定范围的字符串
+
+```{r}
+substr("Equator",3,5) # 截取第三到第五个字符组成的字符串
+
+# 如果输入是向量
+
+substr(c("Equator","South Pole"), 3, 5)
+
+
+substr(c("Equator","South Pole"), c(3,2), c(5,6))
+
+```
+
+
+## strsplit() 字符的拆分
+
+strsplit(x,split)，根据给定的分隔符split将字符串x拆分成若干份
+
+应用，拆分电话号码、年月日，单词提取
+
+```{r}
+# 电话号码
+
+tel_num = c("010-87067734","0247-3495034")
+
+strsplit(tel_num[1],split="-")
+
+strsplit(tel_num,split="-") # 注意看结构
+
+# 年月日
+
+strsplit("2018-10-13",split="-")
+```
+
+## regexpr() 字符串中搜寻pattern返回对应位置
+
+regexpr(pattern,text) 在字符串text中搜寻与pattern所匹配的第一个子字符串的起始字符位置，例如：
+
+```{r}
+regexpr("uat","Equator")
+```
+
+## gregexpr() 搜寻所有与pattern对应的字符串的起始位置
+
+区别：所有都会出现
+
+
+
+
