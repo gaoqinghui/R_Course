@@ -22,7 +22,7 @@ grep("pole", c("Equator","North Pole", "South Pole")) # 找不到，返回空向量
 ```{r}
 nchar("South Pole")
 
-nchar(factor("abc")) # 会出问题
+#  nchar(factor("abc")) # 会出问题
 ```
 
 ## paste()和paste0()
@@ -103,8 +103,151 @@ regexpr("uat","Equator")
 
 ## gregexpr() 搜寻所有与pattern对应的字符串的起始位置
 
-区别：所有都会出现
+区别：所有符合的都会出现
 
+gregexpr(pattern, text)
+
+```{r}
+gregexpr("iss", "Mississippi")
+```
+
+# 正则表达式
+
+正则表达式：通配符，意思是描述一系列字符串的简略表达式
+
+可以说是字符串的公式
+
+
+示例："[au]" 可以用来表达含有字母a或u的字符串，可以这样使用：
+
+```{r}
+grep("[au]", c("Equator","North Pole","South Pole"))
+```
+
+英文句点"."表示任意一个字符，如下例
+
+
+```{r}
+grep("o.e", c("Equator","North Pole","South Pole"))
+```
+
+任意两个字符
+
+```{r}
+grep("N..t", c("Equator","North Pole","South Pole"))
+```
+
+思考，如何查找句点
+
+不能直接查找句点，应该使用反斜杠进行转义，转义就是指将原来的意思（代表任意一个字符）变成句点
+
+因为反斜杠也是特殊的字符，所以要使用两个反斜杠表示一个反斜杠
+
+
+```{r}
+grep(".", c("Equator","North Pole","South Pole"))
+grep("\\.", c("Equator","North Pole","South Pole"))
+```
+
+正则表达式资料:
+
+[百度百科：正则表达式](https://baike.baidu.com/item/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/1700215?fr=aladdin)
+
+[正则表达式手册](http://tool.oschina.net/uploads/apidocs/jquery/regexp.html)
+
+[正则表达式简介](http://www.runoob.com/regexp/regexp-syntax.html)
+
+
+## 应用：检测文件名后缀（非常实用）
+
+以下的函数检测文件名是否具有指定后缀
+
+
+```{r}
+testsuffix <- function(fn,suff) {
+   parts <- strsplit(fn,".",fixed=TRUE)
+   nparts <- length(parts[[1]])
+   return(parts[[1]][nparts] == suff)
+}
+```
+
+测试一下效果
+
+```{r}
+testsuffix("x.abc","abc")
+
+testsuffix("x.abc","ac")
+
+testsuffix("x.y.abc","ac")
+
+testsuffix("x.y.abc","abc")
+
+```
+
+
+另一种检测方法
+
+```{r}
+testsuffix <- function(fn,suff) {
+   parts <- strsplit(fn,"\\.")
+   nparts <- length(parts[[1]])
+   return(parts[[1]][nparts] == suff)
+}
+```
+
+
+```{r}
+testsuffix("x.abc","abc")
+```
+
+最后一种检测方法，请毛婧奕解释原理
+
+```{r}
+testsuffix <- function(fn,suff) {
+  ncf <- nchar(fn) # nchar() gives the string length
+  # determine where the period would start if suff is   the suffix in fn
+  dotpos <- ncf - nchar(suff) + 1
+  # now check that suff is there
+  return(substr(fn,dotpos,ncf)==suff)
+}
+```
+
+
+## 拓展案例：生成文件名
+
+生产q1.pdf到q5.pdf，依次服从正太分布N(0,i^2)的100个随机变量的直方图
+
+```{r}
+for(i in 1:5){
+  fname = paste("q",i,".pdf",sep="") # 等价于fname = paste0("q",i,".pdf")
+  pdf(fname)
+  hist(rnorm(100,sd=i))
+  dev.off
+}
+```
+
+或者使用sprintf()函数（已经介绍过）
+
+for(i in 1:5){
+  fname = sprintf("q%d.pdf",i)
+  pdf(fname)
+  hist(rnorm(100,sd=i))
+  dev.off
+}
+```
+
+# 练习题（非常复杂，但非常实用，可以做批量处理的工具）
+
+1. 读取CH11_quiz1.csv的数据
+2. 将所有叫李X龙的人找出来，不包含李龙，将名字打出来
+3. 将所有名字中间带“小”的人找出来，将名字打出来
+4. 找出hobby中有wow或者wooow之类的人（需要用到+)
+5. 找出hobby中有goose或者geese之类的人（需要用到[])
+6. 找出曾在美国或者曾在日本工作过或留学过的人（内容在content中）
+7. 将所有人的信息分开放置到不同的csv文件中，按照"姓名-ID-性别.csv"方式命名
+
+8. 清空之前读的所有数据
+9. 通过之前生成的csv数据读取所有人的数据（要排除CH11_quiz1.csv这个文件，否则会重复读取，禁止手动操作，必须使用字符串函数）
 
 
 

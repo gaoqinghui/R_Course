@@ -353,7 +353,7 @@ x = 1:2
 y = c(1,2)
 class(x)
 class(y)
-all(x==y)idenct
+all(x==y)
 identical(x,y) # 尽量不要使用identical函数
 ```
 

@@ -58,7 +58,12 @@ RMD在标记方面，语法沿袭了MD，是一样的，以下两个网站有示范
 
 感叹号+中括号+圆括号（里面加路径）
 
-![](C:/Users/Lenovo/Desktop/毛婧奕生活照.jpg)
+
+```{r}
+# ![](C:/Users/Lenovo/Desktop/毛婧奕生活照.jpg)
+```
+
+
 
 
 插入超链接

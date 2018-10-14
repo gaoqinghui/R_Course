@@ -7,14 +7,14 @@ output: html_document
 
 # 连接键盘与显示器
 
-scan(), readline(), print(), cat()
+scan(), readline(), print(), cat(), sink()
 
 ## scan()函数
 
 使用scan()从文件中读取或用键盘输入一个向量，可以是数值型或者字符型向量
 
 ```{r}
-setwd("C:/Users/Lenovo/Desktop/R_Course/Course") # 设定一下工作路径
+setwd("F:/R_Course/Course") # 设定一下工作路径
 
 scan("z1.txt") # 数值型(整数)
 
@@ -228,13 +228,46 @@ getwd()和setwd()：用于确定或改变当前工作目录
 
 使用?files查看所有文件和目录相关的函数
 
-额外知识：使用paste()和paste0()来拼接目录
+## 额外知识：使用paste()和paste0()来拼接目录或文件名
+```{r}
+paste("a","b")
+paste0("a","b")
+
+paste0(c("a","b","c"),c(1,2,3))
+paste0(c("a","b","c"),c(1,2,3),".txt")
+
+# sep是两个向量对应元素间的分隔符
+paste(c("a","b","c"),c(1,2,3),sep="-")
+
+# 使用collapse将会把所有的都连接在一起，并通过collapse来分隔
+paste(c("a","b","c"),c(1,2,3),sep="-",collapse = "abc")
+```
+
 
 # 访问互联网（忽略）
 
 # 读取表格
 
 ## write.csv()
+
+## 通过sink和cat导出结果
+
+1. sink一个指定文件，如sink("hello.txt") # 将输出重定向到hello.txt
+2. 使用cat或其他对结果进行输出
+3. 使用sink()结束重定向
+
+```{r}
+x = rnorm(100)
+y = 3*x + 2 + rnorm(100)
+lm_result = summary(lm(y~x))
+sink("lm_result.txt")
+cat("This is the OLS regression result: \n")
+lm_result
+cat("\n")
+sink()
+# cat(file = "lll.txt",lm_result)
+```
+
 
 ## Excel操作（高庆辉自己制作专题）
 
