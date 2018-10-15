@@ -146,6 +146,7 @@ $(document).ready(function () {
 </div>
 <div id="lapply" class="section level1">
 <h1>lapply</h1>
+<p>lapply(X,FUN)</p>
 <p>无论是怎么样的输入，<strong>总是返回一个列表</strong></p>
 <pre class="r"><code>x = list(a = 1:5, b = rnorm(10))
 lapply(x,mean)</code></pre>
@@ -153,22 +154,325 @@ lapply(x,mean)</code></pre>
 ## [1] 3
 ## 
 ## $b
-## [1] -0.0481313</code></pre>
+## [1] 0.3909694</code></pre>
 <p>另一种用法（相当于循环）</p>
 <pre class="r"><code>x = 1:4
 
 lapply(x,runif)</code></pre>
 <pre><code>## [[1]]
-## [1] 0.7574373
+## [1] 0.9544422
 ## 
 ## [[2]]
-## [1] 0.3545931 0.8848689
+## [1] 0.8539023 0.3025139
 ## 
 ## [[3]]
-## [1] 0.3133173 0.2138116 0.4653836
+## [1] 0.45995179 0.49920187 0.06136527
 ## 
 ## [[4]]
-## [1] 0.09015485 0.17205951 0.04737553 0.67469984</code></pre>
+## [1] 0.4660690 0.4539864 0.3730705 0.1897629</code></pre>
+<p>在apply中指定参数，直接在后面设置参数</p>
+<pre class="r"><code>x = 1:4
+
+lapply(x,runif, min = 0, max = 10) #指定参数</code></pre>
+<pre><code>## [[1]]
+## [1] 2.290047
+## 
+## [[2]]
+## [1] 9.087529 7.927231
+## 
+## [[3]]
+## [1] 4.596812 4.490694 4.707932
+## 
+## [[4]]
+## [1] 7.7564676 7.5046557 0.9011939 9.7611940</code></pre>
+<p>使用在匿名函数上（即不提前声明函数）</p>
+<pre class="r"><code>x = list(a = matrix(1:4,2), b=matrix(1:6,3))
+
+lapply(x, function(elt) elt[,1])</code></pre>
+<pre><code>## $a
+## [1] 1 2
+## 
+## $b
+## [1] 1 2 3</code></pre>
+</div>
+<div id="sapply" class="section level1">
+<h1>sapply</h1>
+<p>sapply(X,FUN)</p>
+<ol style="list-style-type: decimal">
+<li>如果lapply的结果是列表，并且每个元素的长度是1，那么sapply会返回向量</li>
+<li>如果lapply的结果是列表，并且每个元素的长度是是常数并且大于1的，那么sapply会返回矩阵</li>
+<li>如果返回的元素比较复杂，那么会返回列表</li>
+</ol>
+<pre class="r"><code>x = list(a = 1:5, b = rnorm(10))
+lapply(x,mean)</code></pre>
+<pre><code>## $a
+## [1] 3
+## 
+## $b
+## [1] -0.2718148</code></pre>
+<pre class="r"><code>sapply(x,mean)</code></pre>
+<pre><code>##          a          b 
+##  3.0000000 -0.2718148</code></pre>
+<p>转换成矩阵</p>
+<pre class="r"><code>x = list(a = 1:5, b = rnorm(10))
+lapply(x,function(elt){list(mean(elt),sum(elt))})</code></pre>
+<pre><code>## $a
+## $a[[1]]
+## [1] 3
+## 
+## $a[[2]]
+## [1] 15
+## 
+## 
+## $b
+## $b[[1]]
+## [1] 0.2688943
+## 
+## $b[[2]]
+## [1] 2.688943</code></pre>
+<pre class="r"><code>sapply(x,function(elt){list(mean(elt),sum(elt))})</code></pre>
+<pre><code>##      a  b        
+## [1,] 3  0.2688943
+## [2,] 15 2.688943</code></pre>
+</div>
+<div id="apply-1" class="section level1">
+<h1>apply</h1>
+<p>apply通常应用于矩阵，对行或者列进行逐一的应用</p>
+<p>速度不如循环，但是简洁，只需要一行</p>
+<p>apply(X,MARGIN,FUN,…):</p>
+<p>X: 一个矩阵（广义上的向量）</p>
+<p>MARGIN：整数，告诉函数需要对哪个边缘（维度）进行运算，1代表行，2代表列</p>
+<p>FUN：函数</p>
+<p>…：代表FUN中的其他参数</p>
+<pre class="r"><code>x = matrix(1:10,2)
+
+apply(x,2,mean)</code></pre>
+<pre><code>## [1] 1.5 3.5 5.5 7.5 9.5</code></pre>
+<pre class="r"><code>apply(x,1,sum)</code></pre>
+<pre><code>## [1] 25 30</code></pre>
+<div id="colrow-sums-and-means-apply" class="section level2">
+<h2>col/row sums and means: 比apply快</h2>
+<p>rowSums = apply(x,1,sum) rowMeans = apply(x,1,mean)</p>
+<p>colSums = apply(x,2,sum) colMeans = apply(x,2,mean)</p>
+<p>例子：计算分位数</p>
+<pre class="r"><code>x = matrix(rnorm(200),20,10)
+
+apply(x,1,quantile,probs=c(0.25,0.75))</code></pre>
+<pre><code>##           [,1]       [,2]       [,3]        [,4]       [,5]       [,6]
+## 25% -0.3904896 -0.5779145 -0.6791555 -0.07716157 -0.2924182 -0.6692166
+## 75%  0.7210391  1.0100695  0.0754007  0.42591047  0.5338872  0.7669219
+##           [,7]        [,8]       [,9]      [,10]       [,11]      [,12]
+## 25% -0.5620925 -1.12848548 -0.8364457 -0.7647402 -0.81428379 -0.5842169
+## 75%  0.7878240 -0.06285459  0.6728202  0.5150152  0.07166416  0.2417411
+##          [,13]      [,14]      [,15]       [,16]      [,17]     [,18]
+## 25% -0.4221465 -0.1543838 -0.3996797 -0.04554071 -0.9654393 -1.069492
+## 75%  0.3385439  0.6105791  0.7104927  0.69727831  1.0765852  0.890710
+##          [,19]      [,20]
+## 25% -0.3194679 -0.4226564
+## 75%  1.0054145  0.5593461</code></pre>
+</div>
+</div>
+<div id="tapply" class="section level1">
+<h1>tapply</h1>
+<p>tapply是对于一个向量的子集进行函数计算</p>
+<p>tapply(X,INDEX,FUN,…,simplify)</p>
+<p>X：向量</p>
+<p>INDEX：因子(factor)或者其他（将会被强制转化为因子）</p>
+<p>FUN:要应用的函数</p>
+<p>…:FUN的其他参数</p>
+<p>simplify:是否要简化结果</p>
+<pre class="r"><code>x = c(rnorm(10),runif(10),rnorm(10,1))
+
+f = gl(3,10) # gl用于特定的因子和水平
+
+f</code></pre>
+<pre><code>##  [1] 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3 3 3 3 3 3 3 3 3
+## Levels: 1 2 3</code></pre>
+<pre class="r"><code>tapply(x,f,mean)</code></pre>
+<pre><code>##           1           2           3 
+## -0.09257135  0.56368974  0.49110220</code></pre>
+<pre class="r"><code>tapply(x,f,mean,simplify=F) # 不简化结果</code></pre>
+<pre><code>## $`1`
+## [1] -0.09257135
+## 
+## $`2`
+## [1] 0.5636897
+## 
+## $`3`
+## [1] 0.4911022</code></pre>
+<pre class="r"><code>tapply(x,f,range) # 获取范围</code></pre>
+<pre><code>## $`1`
+## [1] -2.899898  1.044819
+## 
+## $`2`
+## [1] 0.1798923 0.8300688
+## 
+## $`3`
+## [1] -1.295601  1.627332</code></pre>
+<p>可以使用simplify2array对各种结果进行简化：</p>
+<pre class="r"><code>simplify2array(tapply(x,f,range,simplify = T))</code></pre>
+<pre><code>##              1         2         3
+## [1,] -2.899898 0.1798923 -1.295601
+## [2,]  1.044819 0.8300688  1.627332</code></pre>
+</div>
+<div id="split" class="section level1">
+<h1>split：将向量拆分成组（因子）</h1>
+<p>split(x,f,drop=FALSE)</p>
+<p>x: 向量或者数据框</p>
+<p>f: 因子factor</p>
+<p>drop： 空的因子水平是否要被drop掉</p>
+<pre class="r"><code>x = c(rnorm(10),runif(10),rnorm(10,1))
+
+f = gl(3,10)
+
+split(x,f)</code></pre>
+<pre><code>## $`1`
+##  [1] -0.3657196  1.3951801  0.4283470 -0.6014046 -1.4549434  0.2370877
+##  [7]  0.5487139  0.2285345  1.4829751 -0.5813377
+## 
+## $`2`
+##  [1] 0.2922973 0.4954363 0.7752218 0.8023016 0.1688759 0.1543917 0.2942801
+##  [8] 0.4551340 0.2792784 0.2150311
+## 
+## $`3`
+##  [1] 0.7640980 1.1972846 0.1601398 1.6796687 1.0385193 1.6200645 0.8227074
+##  [8] 2.0354462 2.2464389 0.3862463</code></pre>
+<pre class="r"><code>lapply(split(x,f),mean)</code></pre>
+<pre><code>## $`1`
+## [1] 0.1317433
+## 
+## $`2`
+## [1] 0.3932248
+## 
+## $`3`
+## [1] 1.195061</code></pre>
+<p>将数据框拆分</p>
+<pre class="r"><code>library(datasets)
+
+head(airquality)</code></pre>
+<pre><code>##   Ozone Solar.R Wind Temp Month Day
+## 1    41     190  7.4   67     5   1
+## 2    36     118  8.0   72     5   2
+## 3    12     149 12.6   74     5   3
+## 4    18     313 11.5   62     5   4
+## 5    NA      NA 14.3   56     5   5
+## 6    28      NA 14.9   66     5   6</code></pre>
+<pre class="r"><code>s = split(airquality, airquality$Month)
+
+lapply(s, function(x) colMeans(x[,c(&quot;Ozone&quot;,&quot;Solar.R&quot;,&quot;Wind&quot;)]))</code></pre>
+<pre><code>## $`5`
+##    Ozone  Solar.R     Wind 
+##       NA       NA 11.62258 
+## 
+## $`6`
+##     Ozone   Solar.R      Wind 
+##        NA 190.16667  10.26667 
+## 
+## $`7`
+##      Ozone    Solar.R       Wind 
+##         NA 216.483871   8.941935 
+## 
+## $`8`
+##    Ozone  Solar.R     Wind 
+##       NA       NA 8.793548 
+## 
+## $`9`
+##    Ozone  Solar.R     Wind 
+##       NA 167.4333  10.1800</code></pre>
+<pre class="r"><code>sapply(s, function(x) colMeans(x[,c(&quot;Ozone&quot;,&quot;Solar.R&quot;,&quot;Wind&quot;)]))</code></pre>
+<pre><code>##                5         6          7        8        9
+## Ozone         NA        NA         NA       NA       NA
+## Solar.R       NA 190.16667 216.483871       NA 167.4333
+## Wind    11.62258  10.26667   8.941935 8.793548  10.1800</code></pre>
+<pre class="r"><code>sapply(s, function(x) colMeans(x[,c(&quot;Ozone&quot;,&quot;Solar.R&quot;,&quot;Wind&quot;)], na.rm=T))</code></pre>
+<pre><code>##                 5         6          7          8         9
+## Ozone    23.61538  29.44444  59.115385  59.961538  31.44828
+## Solar.R 181.29630 190.16667 216.483871 171.857143 167.43333
+## Wind     11.62258  10.26667   8.941935   8.793548  10.18000</code></pre>
+<p>按照多个水平进行拆分</p>
+<pre class="r"><code>x = rnorm(10)
+
+# 拆分成10个水平
+f1 = gl(2,5)
+f2 = gl(5,2)
+
+interaction(f1,f2) # 两个水平进行组合，interaction可以创造空的水平值</code></pre>
+<pre><code>##  [1] 1.1 1.1 1.2 1.2 1.3 2.3 2.4 2.4 2.5 2.5
+## Levels: 1.1 2.1 1.2 2.2 1.3 2.3 1.4 2.4 1.5 2.5</code></pre>
+<pre class="r"><code>str(split(x,list(f1,f2)))</code></pre>
+<pre><code>## List of 10
+##  $ 1.1: num [1:2] 0.896 -1.788
+##  $ 2.1: num(0) 
+##  $ 1.2: num [1:2] -0.987 1.429
+##  $ 2.2: num(0) 
+##  $ 1.3: num -0.545
+##  $ 2.3: num -1.75
+##  $ 1.4: num(0) 
+##  $ 2.4: num [1:2] 0.1897 0.0971
+##  $ 1.5: num(0) 
+##  $ 2.5: num [1:2] 0.45 1.37</code></pre>
+<pre class="r"><code>str(split(x,list(f1,f2), drop=T))</code></pre>
+<pre><code>## List of 6
+##  $ 1.1: num [1:2] 0.896 -1.788
+##  $ 1.2: num [1:2] -0.987 1.429
+##  $ 1.3: num -0.545
+##  $ 2.3: num -1.75
+##  $ 2.4: num [1:2] 0.1897 0.0971
+##  $ 2.5: num [1:2] 0.45 1.37</code></pre>
+</div>
+<div id="mapply" class="section level1">
+<h1>mapply</h1>
+<p>直接示例</p>
+<pre class="r"><code>list(rep(1,4),rep(2,3),rep(3,2),rep(4,1))</code></pre>
+<pre><code>## [[1]]
+## [1] 1 1 1 1
+## 
+## [[2]]
+## [1] 2 2 2
+## 
+## [[3]]
+## [1] 3 3
+## 
+## [[4]]
+## [1] 4</code></pre>
+<pre class="r"><code>mapply(rep,1:4,4:1)</code></pre>
+<pre><code>## [[1]]
+## [1] 1 1 1 1
+## 
+## [[2]]
+## [1] 2 2 2
+## 
+## [[3]]
+## [1] 3 3
+## 
+## [[4]]
+## [1] 4</code></pre>
+<div class="section level2">
+<h2>函数的向量化运算</h2>
+<pre class="r"><code>noise = function(n, mean, sd){
+  rnorm(n, mean, sd)
+}
+
+noise(5,1,2)</code></pre>
+<pre><code>## [1]  1.3868458  2.6363060 -0.7622238  3.6501950 -2.6594065</code></pre>
+<pre class="r"><code>noise(1:5,1:5,2) # 并非是我们想要的结果</code></pre>
+<pre><code>## [1]  1.9303034  2.6898966  3.2260324 -0.1453279  4.2365329</code></pre>
+<pre class="r"><code>mapply(noise, 1:5,1:5, 2)</code></pre>
+<pre><code>## [[1]]
+## [1] -0.2191707
+## 
+## [[2]]
+## [1]  2.602037 -2.170752
+## 
+## [[3]]
+## [1] 0.3368035 1.8578985 5.8710920
+## 
+## [[4]]
+## [1] 2.7436939 0.1516023 4.7269491 5.7105471
+## 
+## [[5]]
+## [1] 6.6621092 6.6502852 4.2206116 0.3618684 6.8093284</code></pre>
+</div>
 </div>
 <div class="section level1">
 <h1>在向量上的应用</h1>
