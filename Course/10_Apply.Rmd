@@ -1,0 +1,275 @@
+---
+title: "apply"
+author: "Gao Qinghui"
+date: "2018年10月14日"
+output: html_document
+---
+
+# APPLY简介
+
+sapply, lapply, apply, tapply, mapply
+
+对一个由多个元素组成的对象逐个应用（applying）一个函数，相当于对元素逐个进行循环
+
+lapply：list apply,将会返回一个和X长度相同的**列表**
+
+sapply (simplify apply): 输出的对象会经过简化（简化为向量、矩阵，而非列表），可以理解为lapply后再进行结果上的简化
+
+
+
+# apply类详细解释
+
+lapply: loop over a list and evaluate a function on each element
+
+sapply: Same as lapply but try to simplify the result
+
+apply: Apply a function over the margins of an array
+
+tapply: Apply a function over subsets of a vector
+
+mapply: Multivariate version of lapply
+
+split: usually use with lapply
+
+# lapply
+
+lapply(X,FUN)
+
+无论是怎么样的输入，**总是返回一个列表**
+
+```{r}
+x = list(a = 1:5, b = rnorm(10))
+lapply(x,mean)
+```
+
+另一种用法（相当于循环）
+
+```{r}
+x = 1:4
+
+lapply(x,runif)
+```
+
+在apply中指定参数，直接在后面设置参数
+
+```{r}
+x = 1:4
+
+lapply(x,runif, min = 0, max = 10) #指定参数
+```
+
+使用在匿名函数上（即不提前声明函数）
+
+
+```{r}
+
+x = list(a = matrix(1:4,2), b=matrix(1:6,3))
+
+lapply(x, function(elt) elt[,1])
+```
+
+# sapply
+
+sapply(X,FUN)
+
+1. 如果lapply的结果是列表，并且每个元素的长度是1，那么sapply会返回向量
+2. 如果lapply的结果是列表，并且每个元素的长度是是常数并且大于1的，那么sapply会返回矩阵
+3. 如果返回的元素比较复杂，那么会返回列表
+
+
+```{r}
+x = list(a = 1:5, b = rnorm(10))
+lapply(x,mean)
+sapply(x,mean)
+```
+
+转换成矩阵
+
+```{r}
+x = list(a = 1:5, b = rnorm(10))
+lapply(x,function(elt){list(mean(elt),sum(elt))})
+sapply(x,function(elt){list(mean(elt),sum(elt))})
+```
+
+# apply
+
+apply通常应用于矩阵，对行或者列进行逐一的应用
+
+
+速度不如循环，但是简洁，只需要一行
+
+
+apply(X,MARGIN,FUN,...):
+
+X: 一个矩阵（广义上的向量）
+
+MARGIN：整数，告诉函数需要对哪个边缘（维度）进行运算，1代表行，2代表列
+
+FUN：函数
+
+...：代表FUN中的其他参数
+
+```{r}
+x = matrix(1:10,2)
+
+apply(x,2,mean)
+
+apply(x,1,sum)
+```
+
+## col/row sums and means: 比apply快
+
+rowSums = apply(x,1,sum)
+rowMeans = apply(x,1,mean)
+
+colSums = apply(x,2,sum)
+colMeans = apply(x,2,mean)
+
+
+例子：计算分位数
+
+```{r}
+x = matrix(rnorm(200),20,10)
+
+apply(x,1,quantile,probs=c(0.25,0.75))
+```
+
+# tapply
+
+tapply是对于一个向量的子集进行函数计算
+
+tapply(X,INDEX,FUN,...,simplify)
+
+X：向量
+
+INDEX：因子(factor)或者其他（将会被强制转化为因子）
+
+FUN:要应用的函数
+
+...:FUN的其他参数
+
+simplify:是否要简化结果
+
+```{r}
+x = c(rnorm(10),runif(10),rnorm(10,1))
+
+f = gl(3,10) # gl用于特定的因子和水平
+
+f
+
+tapply(x,f,mean)
+
+tapply(x,f,mean,simplify=F) # 不简化结果
+
+tapply(x,f,range) # 获取范围
+```
+
+可以使用simplify2array对各种结果进行简化：
+```{r}
+simplify2array(tapply(x,f,range,simplify = T))
+```
+
+# split：将向量拆分成组（因子）
+
+split(x,f,drop=FALSE)
+
+x: 向量或者数据框
+
+f: 因子factor
+
+drop： 空的因子水平是否要被drop掉
+
+```{r}
+x = c(rnorm(10),runif(10),rnorm(10,1))
+
+f = gl(3,10)
+
+split(x,f)
+
+lapply(split(x,f),mean)
+```
+
+
+将数据框拆分
+
+```{r}
+library(datasets)
+
+head(airquality)
+
+s = split(airquality, airquality$Month)
+
+lapply(s, function(x) colMeans(x[,c("Ozone","Solar.R","Wind")]))
+
+sapply(s, function(x) colMeans(x[,c("Ozone","Solar.R","Wind")]))
+
+sapply(s, function(x) colMeans(x[,c("Ozone","Solar.R","Wind")], na.rm=T))
+```
+
+按照多个水平进行拆分
+
+```{r}
+x = rnorm(10)
+
+# 拆分成10个水平
+f1 = gl(2,5)
+f2 = gl(5,2)
+
+interaction(f1,f2) # 两个水平进行组合，interaction可以创造空的水平值
+
+str(split(x,list(f1,f2)))
+
+str(split(x,list(f1,f2), drop=T))
+
+
+
+```
+
+# mapply
+
+直接示例
+
+```{r}
+list(rep(1,4),rep(2,3),rep(3,2),rep(4,1))
+
+mapply(rep,1:4,4:1)
+```
+
+## 函数的向量化运算
+
+```{r}
+noise = function(n, mean, sd){
+  rnorm(n, mean, sd)
+}
+
+noise(5,1,2)
+
+noise(1:5,1:5,2) # 并非是我们想要的结果
+
+mapply(noise, 1:5,1:5, 2)
+```
+
+
+
+
+
+
+
+# 在向量上的应用
+
+例子：计算是否是偶数
+
+```{r}
+vec1 = c(1:100)
+
+odd1 = sapply(vec1, function(x){ifelse(x%%2,FALSE,TRUE)})
+
+head(odd1) # sapply的输出结果是向量
+
+odd1 = lapply(vec1, function(x){ifelse(x%%2,FALSE,TRUE)}) #
+
+head(odd1) # lapply输出的结果是列表
+
+
+```
+
